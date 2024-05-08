@@ -42,3 +42,14 @@ add_executable(minimal
 target_link_libraries(minimal
   tensorflow-lite
 )
+
+add_library(wrapper
+  wrapper.cc
+)
+target_compile_options(wrapper PUBLIC
+  -fvisibility=hidden
+)
+
+target_link_libraries(wrapper
+  tensorflow-lite
+)

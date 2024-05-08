@@ -14,6 +14,7 @@ limitations under the License.
 ==============================================================================*/
 #include <cstdio>
 
+#include "tensorflow/lite/core/model_builder.h"
 #include "tensorflow/lite/interpreter.h"
 #include "tensorflow/lite/kernels/register.h"
 #include "tensorflow/lite/model.h"
@@ -62,20 +63,65 @@ int main(int argc, char* argv[]) {
   printf("=== Pre-invoke Interpreter State ===\n");
   tflite::PrintInterpreterState(interpreter.get());
 
+  printf("********input size %d\n", (int)interpreter->inputs().size());
+  printf("********input tensor 0: %s\n", interpreter->GetInputName(0));
+  printf("********input tensor 1: %s\n", interpreter->input_tensor(1)->name);
+
   // Fill input buffers
   // TODO(user): Insert code to fill input tensors.
   // Note: The buffer of the input tensor with index `i` of type T can
   // be accessed with `T* input = interpreter->typed_input_tensor<T>(i);`
+  float* input0 = interpreter->typed_input_tensor<float>(0);
+  // float* input1 = interpreter->typed_input_tensor<float>(1);
+
+  for (int i = 0; i < 8; i++) {
+    for (int j = 0; j < 8; j++) {
+      auto s = ((i * 8) + j) * 3;
+      input0[s + 0] = 0;
+      input0[s + 1] = 0;
+      input0[s + 2] = 0;
+    }
+  }
+
+  TFLITE_MINIMAL_CHECK(interpreter->Invoke() == kTfLiteOk);
+
+  float* output = interpreter->typed_output_tensor<float>(0);
+  for (int i = 0; i < 43; i++) {
+    printf("w %d: %f\n", i, output[i]);
+  }
+
+  // input0[0] = 3;
+  // input0[1] = 10;
+  // // input1[0] = 10;
+  // // input1[1] = 20;
+  // // input1[2] = 100;
+
+  // for (float i = 0; i < 20; i++) {
+  //   input0[0] = i;
+  //   input0[1] = i;
+  //   // input1[3] = i*10;
+  //   // input1[4] = i*20;
+
+  //   TFLITE_MINIMAL_CHECK(interpreter->Invoke() == kTfLiteOk);
+  //   float* output = interpreter->typed_output_tensor<float>(0);
+  //   printf("input %f, output %f\n", i, output[0]);
+  // }
 
   // Run inference
-  TFLITE_MINIMAL_CHECK(interpreter->Invoke() == kTfLiteOk);
-  printf("\n\n=== Post-invoke Interpreter State ===\n");
-  tflite::PrintInterpreterState(interpreter.get());
+  // TFLITE_MINIMAL_CHECK(interpreter->Invoke() == kTfLiteOk);
+  // printf("\n\n=== Post-invoke Interpreter State ===\n");
+  // tflite::PrintInterpreterState(interpreter.get());
 
   // Read output buffers
   // TODO(user): Insert getting data out code.
   // Note: The buffer of the output tensor with index `i` of type T can
   // be accessed with `T* output = interpreter->typed_output_tensor<T>(i);`
+  // float* output = interpreter->typed_output_tensor<float>(0);
+
+  // printf(
+  // "########################################################################"
+  // "########\n");
+  // printf("output %f\n", *output);
 
   return 0;
 }
