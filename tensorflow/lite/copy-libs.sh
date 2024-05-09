@@ -28,7 +28,10 @@ cp -v $build_dir/_deps/cpuinfo-build/libcpuinfo.a $dst_dir
 
 echo "copy ios libs"
 cp -v install/ios/lib/*.a  $dst/ios/libs/tf/
+llvm-strip --strip-debug $dst/ios/libs/tf/*.a
 echo "copy android arm64"
 cp -v install/android-arm64-v8a/lib/*.a $dst/android/arm64-v8a/tf/
+llvm-strip --strip-debug $dst/android/arm64-v8a/tf/*.a
 echo "copy android armeabi"
 cp -v install/android-armeabi-v7a/lib/*.a $dst/android/armeabi-v7a/tf/
+llvm-strip --strip-debug $dst/android/armeabi-v7a/tf/*.a
